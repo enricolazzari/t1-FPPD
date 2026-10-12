@@ -14,11 +14,11 @@ const(
      rounds = 20
 )
 var (
-     forks [philosophers]sync.Mutex		// Garfos que os filosofos pegam
-     mu sync.Mutex
-     totalWait, maxWait time.Duration	// Soma total de espera e a maior espera do codigo
-     eating, maxEating int				// Quantos filosofos estão comendo e qual foi o maior valor de eating
-     cycles [philosophers]int			// Quantos ciclos cada filosofo completou
+     forks          [philosophers]sync.Mutex
+     statsMu        sync.Mutex
+     totalWait, maxWait time.Duration
+     currentlyEating, maxEating int
+     cycles         [philosophers]int
 )
 
 func Philosopher(id int, wg *sync.WaitGroup) {
@@ -26,40 +26,40 @@ func Philosopher(id int, wg *sync.WaitGroup) {
 	time_to_think := 2
 	time_to_eat := 3
 	col := strings.Repeat(" ", id*5)
-	left, right := id, (id+1)%philosophers
+	leftFork, rightFork := id, (id+1)%philosophers
 
-	for i := 1; i <= rounds; i++ {
+	for round := 1; round <= rounds; round++ {
 		// Pensando
-		fmt.Printf("%s T%d\n", col, i)
+		fmt.Printf("%s T%d\n", col, round)
 		time.Sleep(time.Duration(time_to_think) * time.Second)
 
 		// Pega Garfo : Primeiro da esquerda e depois da direita
-		start := time.Now()
-		forks[left].Lock()
-		fmt.Printf("%s L%d\n", col, i)
+		waitStart := time.Now()
+		forks[leftFork].Lock()
+		fmt.Printf("%s L%d\n", col, round)
 		time.Sleep(time.Millisecond)
-		forks[right].Lock()
-		wait := time.Since(start)
+		forks[rightFork].Lock()
+		waitDuration := time.Since(waitStart)
 
 		// registra quantos estão comendo
-		mu.Lock()
-		totalWait += wait
-		maxWait = max(maxWait, wait)
-		eating++
-		maxEating = max(maxEating, eating)
-		mu.Unlock()
+		statsMu.Lock()
+		totalWait += waitDuration
+		maxWait = max(maxWait, waitDuration)
+		currentlyEating++
+		maxEating = max(maxEating, currentlyEating)
+		statsMu.Unlock()
 
 		// come
-		fmt.Printf("%s E%d\n", col, i)
+		fmt.Printf("%s E%d\n", col, round)
 		time.Sleep(time.Duration(time_to_eat) * time.Second)
 
-		mu.Lock()
-		eating--
+		statsMu.Lock()
+		currentlyEating--
 		cycles[id]++
-		mu.Unlock()
+		statsMu.Unlock()
 
-		forks[right].Unlock()
-		forks[left].Unlock()
+		forks[rightFork].Unlock()
+		forks[leftFork].Unlock()
 	}
 }
 
@@ -68,12 +68,12 @@ func vigia() {
 	last := 0
 	for {
 		time.Sleep(10 * time.Second)
-		mu.Lock()
+		statsMu.Lock()
 		total := 0
 		for _, c := range cycles {
 			total += c
 		}
-		mu.Unlock()
+		statsMu.Unlock()
 		if total == last {
 			fmt.Println("\nDEADLOCK detected! No progress in the last 10s")
 			fmt.Println("Cycles per philosopher:", cycles)

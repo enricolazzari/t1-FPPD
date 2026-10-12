@@ -10,73 +10,75 @@ import (
 
 const (
 	philosophers = 5
-	rounds = 20
+	rounds       = 20
 )
 
 var (
-	forks           [philosphers]sync.
-	Mutex
-	mu              sync.Mutex
-	totalWait, maxWait time.Duration
-	eating, maxEating int
-	cycles            [philosophers]int
-	sam              = make (chan struct {}, philosophers-1) // Novo Semaforo
+	forks                      [philosophers]sync.Mutex
+	statsMu                    sync.Mutex
+	totalWait, maxWait         time.Duration
+	currentlyEating, maxEating int
+	cycles                     [philosophers]int
+	sem                        = make(chan struct{}, philosophers-1) // Semaforo: limita filosofos tentando pegar garfo
 )
 
-func Philosopher (id int, wh *sync. Wait Group){
+func Philosopher(id int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	time_to_think := 2
-	time_to_eat  := 3
+	time_to_eat := 3
 	col := strings.Repeat(" ", id*5)
-	left, right := id, (id+1)%philosophers
+	leftFork, rightFork := id, (id+1)%philosophers
 
-	for i := 1; i <= rounds; i++ {
-		fmt.Printf("%s T%d\n", col, i)
-		time.Sleep(time.Duration (time_to_think) * time.Second)
-		
-		start := time.Now()
-		sem <- struct{}{} //Entra no semaforo antes de pegar o garfo
-		forks[left].Lock()
-		fmt.Printf("%s L%d\n", col, i)
+	for round := 1; round <= rounds; round++ {
+		// Pensando
+		fmt.Printf("%s T%d\n", col, round)
+		time.Sleep(time.Duration(time_to_think) * time.Second)
+
+		// Pega Garfo : Primeiro da esquerda e depois da direita
+		waitStart := time.Now()
+		sem <- struct{}{}        // Entra no semaforo antes de pegar o garfo
+		forks[leftFork].Lock()
+		fmt.Printf("%s L%d\n", col, round)
 		time.Sleep(time.Millisecond)
-		forks[right].Lock()
-		wait := time.Since(start)
+		forks[rightFork].Lock()
+		waitDuration := time.Since(waitStart)
 
-		mu.Lock()
-		totalWait += wait
-		maxWait = max(maxWait, wait)
-		eating++
-		maxEating = max(maxEating, eating)
-		mu.Unlock()
+		// registra quantos estão comendo
+		statsMu.Lock()
+		totalWait += waitDuration
+		maxWait = max(maxWait, waitDuration)
+		currentlyEating++
+		maxEating = max(maxEating, currentlyEating)
+		statsMu.Unlock()
 
-		fmt.Printf("%s E %d\n", col, i)
-		time.Sleep(time.Duration (time_to_eat) * time.Second)
+		// come
+		fmt.Printf("%s E%d\n", col, round)
+		time.Sleep(time.Duration(time_to_eat) * time.Second)
 
-		mu.Lock()
-		eating--
+		statsMu.Lock()
+		currentlyEating--
 		cycles[id]++
-		mu.Unlock()
+		statsMu.Unlock()
 
-		forks[right].Unlock()
-		forks[left].Unlock()
-		<- sem //Libera o semaforo depois de soltar os garfos
+		forks[rightFork].Unlock()
+		forks[leftFork].Unlock()
+		<-sem                    // Libera o semaforo depois de soltar os garfos
 	}
 }
 
-
-func vigia(){
+func vigia() {
 	last := 0
 	for {
 		time.Sleep(10 * time.Second)
-		mu.Lock()
+		statsMu.Lock()
 		total := 0
-		for _,c := range cycles {
+		for _, c := range cycles {
 			total += c
 		}
-		mu.Unlock()
-		if total = last {
+		statsMu.Unlock()
+		if total == last {
 			fmt.Println("\nDEADLOCK detected! No progress in the last 10s")
-			fmt.Println("Cyces per philosopher:", cycles)
+			fmt.Println("Cycles per philosopher:", cycles)
 			os.Exit(1)
 		}
 		last = total
@@ -84,22 +86,22 @@ func vigia(){
 }
 
 func main() {
-	fmt.Printf("\n[P1] [P2] [P3] [P4] [P5] \n\n")
+	fmt.Printf("\n[P1] [P2] [P3] [P4] [P5]\n\n")
 
 	var wg sync.WaitGroup
 	start := time.Now()
 	go vigia()
 
-	for j := 0; j < philosophers; j++{
-	  wg.Add(1)
-	  go Philospher(j, &wg)
+	for j := 0; j < philosophers; j++ {
+		wg.Add(1)
+		go Philosopher(j, &wg)
 	}
 	wg.Wait()
 	elapsed := time.Since(start)
 
 	fmt.Printf("\nDinner took %s\n", elapsed)
+	fmt.Println("Average wait:", totalWait/(philosophers*rounds))
 	fmt.Println("Max wait:", maxWait)
 	fmt.Println("Max eating at the same time:", maxEating)
-	fmt.Println("Cycles per philospher:", cycles)
+	fmt.Println("Cycles per philosopher:", cycles)
 }
-		
