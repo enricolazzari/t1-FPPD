@@ -1,0 +1,6 @@
+versao,estrategia,execucao,tempo_total_ms,espera_media_ms,espera_max_ms,max_comendo,ciclos_f0,ciclos_f1,ciclos_f2,ciclos_f3,ciclos_f4
+v2,semaforo4,1,302116.628,9803.562,12005.875,1,20,20,20,20,20
+v2,semaforo4,2,302120.913,9803.478,12005.797,1,20,20,20,20,20
+v2,semaforo4,3,302118.291,9803.578,12006.179,1,20,20,20,20,20
+v2,semaforo4,4,302113.183,9803.399,12005.585,1,20,20,20,20,20
+v2,semaforo4,5,302116.549,9803.479,12004.552,1,20,20,20,20,20
