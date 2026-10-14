@@ -1,9 +1,5 @@
 build/
 linksImportantes.md
-results/tabela.md
-relatorio/relatorio.md
-relatorio/gerar_pdf.sh
-relatorio/template.tex
 relatorio/*.aux
 relatorio/*.log
 relatorio/*.fls
