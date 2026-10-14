@@ -1,6 +1,3 @@
 build/
 linksImportantes.md
-relatorio/*.aux
-relatorio/*.log
-relatorio/*.fls
-relatorio/*.fdb_latexmk
+
