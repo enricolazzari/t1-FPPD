@@ -1,0 +1,13 @@
+--- a/v1/v1.go	2026-10-13 23:14:02
++++ b/v1/v1.go	2026-10-13 23:14:02
+@@ -102,4 +102,9 @@
+ 	fmt.Println("Max wait:", maxWait)
+ 	fmt.Println("Max eating at the same time:", maxEating)
+ 	fmt.Println("Cycles per philosopher:", cycles)
++
++	// linha CSV para scripts/run_experiments.sh (mesmas métricas acima, em ms)
++	fmt.Printf("CSV:v1,esq-dir,1,%.3f,%.3f,%.3f,%d,%d,%d,%d,%d,%d\n",
++		float64(elapsed)/float64(time.Millisecond), float64(totalWait/(philosophers*rounds))/float64(time.Millisecond),
++		float64(maxWait)/float64(time.Millisecond), maxEating, cycles[0], cycles[1], cycles[2], cycles[3], cycles[4])
+ }
+\ No newline at end of file
