@@ -2,15 +2,15 @@
 [P1] [P2] [P3] [P4] [P5]
 
                      T1
- T1
-      T1
            T1
                 T1
-                L1
-           L1
+ T1
+      T1
       L1
- L1
+           L1
                      L1
+                L1
+ L1
 
 DEADLOCK detected! No progress in the last 10s
 Cycles per philosopher: [0 0 0 0 0]

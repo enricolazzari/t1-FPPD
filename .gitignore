@@ -1,6 +1,10 @@
-v1.go
-v3.go
-linksImportantes.md
-t1-v1.pdf
-t1-v1.pdf:Zone.Identifier
 build/
+linksImportantes.md
+results/tabela.md
+relatorio/relatorio.md
+relatorio/gerar_pdf.sh
+relatorio/template.tex
+relatorio/*.aux
+relatorio/*.log
+relatorio/*.fls
+relatorio/*.fdb_latexmk

@@ -31,7 +31,7 @@ func Philosopher(id, iteration int) {
 
 func main() {
 	philosophers := 5
-	rounds := 5
+	rounds := 20
 
 	fmt.Println("\n[P1] [P2] [P3] [P4] [P5]\n")
 
@@ -47,4 +47,8 @@ func main() {
 	elapsed := time.Since(start)
 
 	fmt.Printf("\nSequential Dinner took %s\n\n", elapsed)
+
+	// linha CSV para scripts/run_experiments.sh (sequencial: sem espera por garfos, 1 comendo por vez)
+	fmt.Printf("CSV:v0,sequencial,1,%.3f,0,0,1,%d,%d,%d,%d,%d\n",
+		float64(elapsed)/float64(time.Millisecond), rounds, rounds, rounds, rounds, rounds)
 }

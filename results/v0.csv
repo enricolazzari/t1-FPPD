@@ -1,6 +1,6 @@
 versao,estrategia,execucao,tempo_total_ms,espera_media_ms,espera_max_ms,max_comendo,ciclos_f0,ciclos_f1,ciclos_f2,ciclos_f3,ciclos_f4
-v0,sequencial,1,500355.757,0,0,1,20,20,20,20,20
-v0,sequencial,2,500382.137,0,0,1,20,20,20,20,20
-v0,sequencial,3,500302.851,0,0,1,20,20,20,20,20
-v0,sequencial,4,500238.170,0,0,1,20,20,20,20,20
-v0,sequencial,5,500228.082,0,0,1,20,20,20,20,20
+v0,sequencial,1,500328.252,0,0,1,20,20,20,20,20
+v0,sequencial,2,500316.825,0,0,1,20,20,20,20,20
+v0,sequencial,3,500290.286,0,0,1,20,20,20,20,20
+v0,sequencial,4,500320.411,0,0,1,20,20,20,20,20
+v0,sequencial,5,500336.455,0,0,1,20,20,20,20,20

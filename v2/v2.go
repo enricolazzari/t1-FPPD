@@ -104,4 +104,9 @@ func main() {
 	fmt.Println("Max wait:", maxWait)
 	fmt.Println("Max eating at the same time:", maxEating)
 	fmt.Println("Cycles per philosopher:", cycles)
+
+	// linha CSV para scripts/run_experiments.sh (mesmas métricas acima, em ms)
+	fmt.Printf("CSV:v2,semaforo4,1,%.3f,%.3f,%.3f,%d,%d,%d,%d,%d,%d\n",
+		float64(elapsed)/float64(time.Millisecond), float64(totalWait/(philosophers*rounds))/float64(time.Millisecond),
+		float64(maxWait)/float64(time.Millisecond), maxEating, cycles[0], cycles[1], cycles[2], cycles[3], cycles[4])
 }
